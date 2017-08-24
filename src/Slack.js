@@ -1,6 +1,21 @@
 import React,  { Component } from 'react';
 import './Slack.css';
 
+
+// DUMMY DATA -------------------------
+const user_ed = {
+  id: 239479,
+  name: "Ed",
+  avatarId: "43YN9AVT8YN84TY8YTBITBVILE",
+};
+
+const user_slack = {
+  id: 487,
+  name: "SlackClone",
+  avatarId: "0T9Y34N0TAY298C98389ACN89Y",
+};
+// ------------------------------------
+
 const days = [
   'SUN','MON','TUE','WED','THR','FRI','SAT'];
 
@@ -42,28 +57,44 @@ class Message extends Component {
 }
 
 function Channels(props) {
+  const channels = props.channels.map((channel) => {
+    return (
+      <li
+        key={channel}
+        className={channel===props.selected?"selected":""}
+        onClick={(e) => props.onChange({channel})}>
+        {channel}
+      </li>
+    );
+  });
+
   return (
     <div id="channels">
       <h2>Channels</h2>
       <ul>
-        <li># python</li>
-        <li># react</li>
-        <li className="selected"># redux</li>
-        <li># javascript</li>
+        {channels}
       </ul>
     </div>
   );
 }
 
 function People(props) {
+  const people = props.people.map((person) => {
+    return (
+      <li
+        key={person.id}
+        className={person.id===props.selected?"selected":""}
+        onClick={(e) => props.onChange({person})}>
+        {person.name}
+      </li>
+    );
+  });
+
   return (
     <div id="people">
-      <h2>Peoples</h2>
+      <h2>People</h2>
       <ul>
-        <li>Ed</li>
-        <li>Bex</li>
-        <li>Anne</li>
-        <li>David</li>
+        {people}
       </ul>
     </div>
   );
@@ -140,22 +171,21 @@ export default class Slack extends Component {
   constructor(props) {
     super(props);
 
-    this.user_ed = {
-      id: 239479,
-      name: "Ed",
-      avatarId: "43YN9AVT8YN84TY8YTBITBVILE",
-    };
-
-    this.user_slack = {
-      id: 487,
-      name: "SlackClone",
-      avatarId: "0T9Y34N0TAY298C98389ACN89Y",
-    };
+    this.CHANNEL_TYPE = 0;
+    this.PERSON_TYPE = 1;
+    
+    this.DEFAULT_GROUP = "react";
+    this.DEFAULT_GROUP_TYPE = this.CHANNEL_TYPE;
 
     this.state = {
+      currentUser: user_ed,
+      group: this.DEFAULT_GROUP,
+      group_type: this.DEFAULT_GROUP_TYPE,
+      people: [ user_ed, user_slack ],
+      channels: [ "home", "python", "react", "redux", "javascript" ],
       messages: [
-        this.createMessage(this.user_slack, "home", "Hello from slack clone!"),
-        this.createMessage(this.user_ed, "react", "Learning react!"),
+        this.createMessage(user_slack, "home", "Hello from slack clone!"),
+        this.createMessage(user_ed, "react", "Learning react!"),
       ],
     };
   }
@@ -171,18 +201,42 @@ export default class Slack extends Component {
   }
 
   sendMessage = (msg) => {
-    const message = this.createMessage(this.user_ed, "react", msg);
+    const message = this.createMessage(user_ed, "react", msg);
     const messages = this.state.messages.concat(message);
     this.setState({ messages });
   }
 
+  channelSelected = (selected) => {
+    this.setState({
+      group: selected.channel,
+      group_type: this.CHANNEL_TYPE,
+    });
+  }
+
+  personSelected = (selected) => {
+    this.setState({
+      group: selected.person.id,
+      group_type: this.PERSON_TYPE,
+    });
+  }
+
   render() {
+    const { group, group_type } = this.state;
+    const selected_channel = (group_type===this.CHANNEL_TYPE?group:null);
+    const selected_person = (group_type===this.PERSON_TYPE?group:null);
+
     return (
       <div id="slack">
         <div id="sidebar">
           <h1>Slack Clone</h1>
-          <Channels/>
-          <People/>
+          <Channels
+            channels={this.state.channels}
+            selected={selected_channel}
+            onChange={this.channelSelected}/>
+          <People
+            people={this.state.people.filter((p) => this.state.currentUser.id!==p.id)}
+            selected={selected_person}
+            onChange={this.personSelected}/>
         </div>
         <div id="content">
           <MessageDisplay messages={this.state.messages}/>

@@ -12,6 +12,7 @@
   padding: 10px;
   padding-right: 0px;
   flex: 0 0 20%;
+  min-width: 190px;
   overflow-y: auto;
 }
 
@@ -22,15 +23,20 @@
 #sidebar h2 {
   font-variant: all-small-caps;
   font-weight: lighter;
+  margin-bottom: 0px;
 }
 
 #sidebar ul {
   display: inline;
   color: lightgray;
+  padding-top: 3px;
 }
 
 #sidebar li {
   padding: 5px;
+  margin-left: 15px;
+  cursor: pointer;
+  list-style-type: none;
 }
 
 #sidebar li:hover {
