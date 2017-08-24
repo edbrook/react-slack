@@ -1,6 +1,10 @@
-import React,  { Component } from 'react';
-import './Slack.css';
+import React, { Component } from 'react';
+import Channels from './Channels';
+import MessageDisplay from './MessageDisplay';
+import MessageEntry from './MessageEntry';
+import People from './People';
 
+import './Slack.css';
 
 // DUMMY DATA -------------------------
 const user_ed = {
@@ -15,165 +19,6 @@ const user_slack = {
   avatarId: "0T9Y34N0TAY298C98389ACN89Y",
 };
 // ------------------------------------
-
-const days = [
-  'SUN','MON','TUE','WED','THR','FRI','SAT'];
-
-const months = [
-  'JAN','FEB','MAR','APR',
-  'MAY','JUN','JUL','AUG',
-  'SEP','OCT','NOV','DEC'];
-
-function dateToString(date) {
-  const day = days[date.getDay()];
-  const dd = date.getDate(); 
-  const mm = months[date.getMonth()];
-  const yyyy = date.getFullYear();
-  const time = date.toTimeString();
-  return (
-    day + " " + dd + " " + mm + " " + yyyy + " " + time
-  );
-}
-
-class Message extends Component {
-  //<img alt={"avatar for " + msg.sender.name} .../>
-  render() {
-    const msg = this.props.message;
-    return (
-      <div className="message">
-        <div className="avatar">
-          <img alt="" src={"/imgs/avatar?id=" + msg.sender.avatarId}/>
-        </div>
-        <div className="msgContent">
-          <div className="msgHeader">
-            <span className="msgAuthor">{msg.sender.name}</span>
-            <span className="msgDate">{dateToString(msg.date)}</span>
-          </div>
-          <div className="msgText">{msg.text}</div>
-        </div>
-      </div>
-    );
-  }
-}
-
-function Channels(props) {
-  const channels = props.channels.map((channel) => {
-    return (
-      <li
-        key={channel}
-        className={channel===props.selected?"selected":""}
-        onClick={(e) => props.onChange({channel})}>
-        # {channel}
-      </li>
-    );
-  });
-
-  return (
-    <div id="channels">
-      <h2>Channels</h2>
-      <ul>
-        {channels}
-      </ul>
-    </div>
-  );
-}
-
-function People(props) {
-  const people = props.people.map((person) => {
-    return (
-      <li
-        key={person.id}
-        className={person.id===props.selected?"selected":""}
-        onClick={(e) => props.onChange({person})}>
-        @ {person.name}
-      </li>
-    );
-  });
-
-  return (
-    <div id="people">
-      <h2>People</h2>
-      <ul>
-        {people}
-      </ul>
-    </div>
-  );
-}
-
-class MessageEntry extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      msg: "",
-    }
-  }
-
-  handleChange = (event) => {
-    const msg = event.target.value;
-    this.setState({ msg });
-  }
-
-  handleSubmit = (event) => {
-    event.preventDefault();
-    if (this.props.hasOwnProperty('onSubmit')) {
-      this.props.onSubmit(this.state.msg);
-    }
-    this.setState({ msg: "" });
-  }
-
-  render() {
-    const { msg } = this.state;
-    return (
-      <div id="msgEntry">
-        <form id="inFrm" onSubmit={this.handleSubmit}>
-          <input
-            id="inTxt"
-            type="text"
-            value={msg}
-            onChange={this.handleChange}
-            placeholder="Type your message here. Press Enter to send."/>
-        </form>
-      </div>
-    );
-  }
-}
-
-class MessageDisplay extends Component {
-  constructor(props) {
-    super(props);
-    this.msgList = null;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.msgList.scrollHeight > this.msgList.clientHeight) {
-      this.msgList.scrollTop = this.msgList.scrollHeight;
-    }
-  }
-
-  render() {
-    const msgs = this.props.messages.map((msg) => {
-      return (
-        <Message key={msg.id} message={msg}/>
-      );
-    });
-
-    if (msgs.length === 0) {
-      return (
-        <div id="msgList" ref={(comp) => {this.msgList = comp;}}>
-          <h1 className="noMessages">NO MESSAGES YET!</h1>
-        </div>
-      );
-    }
-
-    return (
-      <div id="msgList" ref={(comp) => {this.msgList = comp;}}>
-        <div id="msgs">
-          {msgs}
-        </div>
-      </div>
-    );
-  }
-}
 
 export default class Slack extends Component {
   constructor(props) {
