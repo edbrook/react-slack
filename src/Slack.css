@@ -77,6 +77,13 @@
   flex: 1;
 }
 
+#msgList h1.noMessages {
+  align-self: center;
+  margin: auto;
+  color: lightgray;
+  font-family: cursive;
+}
+
 /* Message entry panel */
 #msgEntry {
   padding: 10px;

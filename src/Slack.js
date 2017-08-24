@@ -36,17 +36,17 @@ function dateToString(date) {
 }
 
 class Message extends Component {
-  //<img alt={"avatar for " + msg.user.name} .../>
+  //<img alt={"avatar for " + msg.sender.name} .../>
   render() {
     const msg = this.props.message;
     return (
       <div className="message">
         <div className="avatar">
-          <img alt="" src={"/imgs/avatar?id=" + msg.user.avatarId}/>
+          <img alt="" src={"/imgs/avatar?id=" + msg.sender.avatarId}/>
         </div>
         <div className="msgContent">
           <div className="msgHeader">
-            <span className="msgAuthor">{msg.user.name}</span>
+            <span className="msgAuthor">{msg.sender.name}</span>
             <span className="msgDate">{dateToString(msg.date)}</span>
           </div>
           <div className="msgText">{msg.text}</div>
@@ -63,7 +63,7 @@ function Channels(props) {
         key={channel}
         className={channel===props.selected?"selected":""}
         onClick={(e) => props.onChange({channel})}>
-        {channel}
+        # {channel}
       </li>
     );
   });
@@ -85,7 +85,7 @@ function People(props) {
         key={person.id}
         className={person.id===props.selected?"selected":""}
         onClick={(e) => props.onChange({person})}>
-        {person.name}
+        @ {person.name}
       </li>
     );
   });
@@ -157,6 +157,14 @@ class MessageDisplay extends Component {
       );
     });
 
+    if (msgs.length === 0) {
+      return (
+        <div id="msgList" ref={(comp) => {this.msgList = comp;}}>
+          <h1 className="noMessages">NO MESSAGES YET!</h1>
+        </div>
+      );
+    }
+
     return (
       <div id="msgList" ref={(comp) => {this.msgList = comp;}}>
         <div id="msgs">
@@ -174,34 +182,47 @@ export default class Slack extends Component {
     this.CHANNEL_TYPE = 0;
     this.PERSON_TYPE = 1;
     
-    this.DEFAULT_GROUP = "react";
+    this.DEFAULT_GROUP = "home";  // DEMO DATA
     this.DEFAULT_GROUP_TYPE = this.CHANNEL_TYPE;
 
     this.state = {
-      currentUser: user_ed,
+      currentUser: user_ed, // DEMO DATA
       group: this.DEFAULT_GROUP,
       group_type: this.DEFAULT_GROUP_TYPE,
-      people: [ user_ed, user_slack ],
-      channels: [ "home", "python", "react", "redux", "javascript" ],
-      messages: [
-        this.createMessage(user_slack, "home", "Hello from slack clone!"),
-        this.createMessage(user_ed, "react", "Learning react!"),
-      ],
+      people: [ user_ed, user_slack ],  // DEMO DATA
+      channels: [ "home", "python", "react", "redux", "javascript" ], // DEMO DATA
+      messages: [],
     };
+
+    // DEMO DATA
+    this.state.messages = [
+      this.createMessage(user_slack, "Hello users from Slack Clone!"),
+      this.createMessage(user_ed, "This should be in the " + this.DEFAULT_GROUP + " group!"),
+      {
+        id: Math.floor(Math.random() * 1000000),
+        date: new Date(),
+        sender: user_slack,
+        recipient: user_ed,
+        recipient_type: this.PERSON_TYPE,
+        text: "Hello Ed, from Slack Clone!",
+      }
+    ];
+    // -------
   }
 
-  createMessage = (user, channel, text) => {
+  createMessage = (sender, text) => {
     return {
-      id: Math.floor(Math.random() * 1000000),
-      date: new Date(),
-      user,
-      channel,
+      id: Math.floor(Math.random() * 1000000), // DEMO DATA
+      date: new Date(),   // DEMO DATA
+      sender,
+      recipient: this.state.group,
+      recipient_type: this.state.group_type,
       text,
     };
   }
 
   sendMessage = (msg) => {
-    const message = this.createMessage(user_ed, "react", msg);
+    const message = this.createMessage(this.state.currentUser, msg);
     const messages = this.state.messages.concat(message);
     this.setState({ messages });
   }
@@ -215,7 +236,7 @@ export default class Slack extends Component {
 
   personSelected = (selected) => {
     this.setState({
-      group: selected.person.id,
+      group: selected.person,
       group_type: this.PERSON_TYPE,
     });
   }
@@ -223,7 +244,28 @@ export default class Slack extends Component {
   render() {
     const { group, group_type } = this.state;
     const selected_channel = (group_type===this.CHANNEL_TYPE?group:null);
-    const selected_person = (group_type===this.PERSON_TYPE?group:null);
+    const selected_person = (group_type===this.PERSON_TYPE?group.id:null);
+    const messages = this.state.messages.filter((msg) => {
+      let ans = false;
+      switch (group_type) {
+        case this.CHANNEL_TYPE:
+          ans = msg.recipient === group;
+          break;
+        case this.PERSON_TYPE:
+          let senderIsCurrentUser = msg.sender.id === this.state.currentUser.id;
+          let senderIsSelectedUser = msg.sender.id === selected_person;
+          let recipIsCurrentUser = msg.recipient.id === this.state.currentUser.id;
+          let recipIsSelectedUser = msg.recipient.id === selected_person;
+          ans = (
+            (senderIsCurrentUser && recipIsSelectedUser) ||
+            (senderIsSelectedUser && recipIsCurrentUser)
+          );
+          break;
+        default:
+          ans = false;
+      }
+      return ans;
+    });
 
     return (
       <div id="slack">
@@ -239,7 +281,7 @@ export default class Slack extends Component {
             onChange={this.personSelected}/>
         </div>
         <div id="content">
-          <MessageDisplay messages={this.state.messages}/>
+          <MessageDisplay messages={messages}/>
           <MessageEntry onSubmit={this.sendMessage}/>
         </div>
       </div>
