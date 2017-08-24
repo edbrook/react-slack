@@ -18,6 +18,12 @@ const user_slack = {
   name: "SlackClone",
   avatarId: "0T9Y34N0TAY298C98389ACN89Y",
 };
+
+const user_tux = {
+  id: 32894,
+  name: "Tux",
+  avatarId: "94TYVA903N4YPT098P4NA94TUS",
+};
 // ------------------------------------
 
 export default class Slack extends Component {
@@ -34,7 +40,7 @@ export default class Slack extends Component {
       currentUser: user_ed, // DEMO DATA
       group: this.DEFAULT_GROUP,
       group_type: this.DEFAULT_GROUP_TYPE,
-      people: [ user_ed, user_slack ],  // DEMO DATA
+      people: [ user_ed, user_slack, user_tux ],  // DEMO DATA
       channels: [ "home", "python", "react", "redux", "javascript" ], // DEMO DATA
       messages: [],
     };
