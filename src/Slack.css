@@ -3,6 +3,7 @@
 #slack {
   display: flex;
   height: 100%;
+  flex-direction: column;
 }
 
 /* Sidebar */
@@ -11,9 +12,8 @@
   color: white;
   padding: 10px;
   padding-right: 0px;
-  flex: 0 0 20%;
-  min-width: 190px;
-  overflow-y: auto;
+  flex: 0 60px;
+  overflow-y: scroll;
 }
 
 #sidebar h1 {
@@ -66,7 +66,7 @@
   flex: 1;
   display: flex;
   overflow-y: scroll;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 
 #msgList > div {
@@ -99,24 +99,23 @@
   margin: 5px;
   border-radius: 5px;
   border: 2px solid darkgray;
-  font-size: 1.5em;
-  line-height: 1.5em;
   padding: 5px;
 }
 
 /* Individual messages */
 .message {
-  margin-left: 30px;
-  margin-bottom: 20px;
+  margin-left: 20px;
+  margin-bottom: 10px;
   display: flex;
 }
 
 .avatar {
-  width: 55px;
-  height: 55px;
-  flex: 0 0 55px;
+  width: 45px;
+  height: 45px;
+  flex: 0 0 45px;
   border: solid 2px #EEE;
-  border-radius: 15%;
+  border-radius: 10%;
+  background-color: #F1F8FA;
 }
 
 .msgContent {
@@ -125,17 +124,61 @@
 }
 
 .msgAuthor {
-  font-size: 1.2em;
   font-weight: bold;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 .msgDate {
-  color: lightgray;
+  color: gray;
   font-weight: lighter;
+  font-size: 0.5em;
 }
 
 .msgText {
   margin-top: 5px;
-  font-size: 1.5em;
+}
+
+/* Larger screens */
+@media all and (min-width: 700px) {
+  #slack {
+    flex-direction: row;
+  }
+
+  /* Sidebar */
+  #sidebar {
+    padding: 10px;
+    padding-right: 0px;
+    flex: 0 0 20%;
+    min-width: 190px;
+    overflow-y: auto;
+  }
+
+  #inTxt {
+    font-size: 1.5em;
+    line-height: 1.5em;
+  }
+
+  /* Individual messages */
+  .message {
+    margin-left: 30px;
+    margin-bottom: 20px;
+    display: flex;
+  }
+
+  .avatar {
+    width: 55px;
+    height: 55px;
+    flex: 0 0 55px;
+    border-radius: 15%;
+  }
+
+  .msgAuthor {
+    font-size: 1.2em;
+    margin-right: 20px;
+  }
+
+  .msgText {
+    margin-top: 5px;
+    font-size: 1.5em;
+  }
 }

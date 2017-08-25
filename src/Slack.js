@@ -7,9 +7,9 @@ import People from './People';
 import './Slack.css';
 
 // DUMMY DATA -------------------------
-const user_ed = {
+const user_me = {
   id: 239479,
-  name: "Ed",
+  name: "Me",
   avatarId: "43YN9AVT8YN84TY8YTBITBVILE",
 };
 
@@ -37,10 +37,10 @@ export default class Slack extends Component {
     this.DEFAULT_GROUP_TYPE = this.CHANNEL_TYPE;
 
     this.state = {
-      currentUser: user_ed, // DEMO DATA
+      currentUser: user_me, // DEMO DATA
       group: this.DEFAULT_GROUP,
       group_type: this.DEFAULT_GROUP_TYPE,
-      people: [ user_ed, user_slack, user_tux ],  // DEMO DATA
+      people: [ user_me, user_slack, user_tux ],  // DEMO DATA
       channels: [ "home", "python", "react", "redux", "javascript" ], // DEMO DATA
       messages: [],
     };
@@ -48,14 +48,22 @@ export default class Slack extends Component {
     // DEMO DATA
     this.state.messages = [
       this.createMessage(user_slack, "Hello users from Slack Clone!"),
-      this.createMessage(user_ed, "This should be in the " + this.DEFAULT_GROUP + " group!"),
+      this.createMessage(user_me, "This should be in the " + this.DEFAULT_GROUP + " group!"),
       {
         id: Math.floor(Math.random() * 1000000),
         date: new Date(),
         sender: user_slack,
-        recipient: user_ed,
+        recipient: user_me,
         recipient_type: this.PERSON_TYPE,
-        text: "Hello Ed, from Slack Clone!",
+        text: "Hello, from Slack Clone!",
+      },
+      {
+        id: Math.floor(Math.random() * 1000000),
+        date: new Date(),
+        sender: user_slack,
+        recipient: user_tux,
+        recipient_type: this.PERSON_TYPE,
+        text: "Hello Tux, from Slack Clone!",
       }
     ];
     // -------
@@ -122,15 +130,15 @@ export default class Slack extends Component {
       <div id="slack">
         <div id="sidebar">
           <h1>Slack Clone</h1>
-          <Channels
-            channels={this.state.channels}
-            selected={selected_channel}
-            onChange={this.channelSelected}/>
-          <People
-            people={this.state.people.filter((p) => this.state.currentUser.id!==p.id)}
-            selected={selected_person}
-            onChange={this.personSelected}/>
-        </div>
+            <Channels
+              channels={this.state.channels}
+              selected={selected_channel}
+              onChange={this.channelSelected}/>
+            <People
+              people={this.state.people.filter((p) => this.state.currentUser.id!==p.id)}
+              selected={selected_person}
+              onChange={this.personSelected}/>
+          </div>
         <div id="content">
           <MessageDisplay messages={messages}/>
           <MessageEntry onSubmit={this.sendMessage}/>
